@@ -24,7 +24,15 @@ struct Database {
 };
 
 // 엔트리를 생성한다.
-Entry *create(Type type, std::string key, void *value);
+Entry *create(Type type, std::string key, void *value){
+  Entry *newEntry=new Entry;
+
+  newEntry->type=type;
+  newEntry->key=key;
+  newEntry->value=value;
+
+  return newEntry;
+}
 
 // 데이터베이스를 초기화한다.
 void init(Database &database){
@@ -33,7 +41,22 @@ void init(Database &database){
 }
 
 // 데이터베이스에 엔트리를 추가한다.
-void add(Database &database, Entry *entry);
+void add(Database &database, Entry *entry){
+  Entry *newEntries=new Entry[database.size+1];
+
+  for(int i=0;i<database.size;++i){
+    newEntries[i]=database.entries[i];
+  }
+
+  newEntries[database.size]=*entry;
+
+  delete[]database.entries;
+
+  database.entries=newEntries;
+
+  ++database.size;
+  
+}
 
 // 데이터베이스에서 키에 해당하는 엔트리를 찾는다.
 Entry *get(Database &database, std::string &key);
@@ -86,15 +109,21 @@ int main(){
           cout<<"value: ";
           if(t==INT){
             int *value=new int;
+            cin>>*value;
+            add(db,create(t,key,value));
           }
           else if(t==DOUBLE){
             double *value=new double;
+            cin>>*value;
           }
           else if(t==STRING){
             string *value=new string;
+            cin>>*value;
           }
           else if(t==ARRAY){
-            
+            Array *array=new Array;
+            string type;
+            cout<<"type (int, double, string, array): ";
           }
 
         }
