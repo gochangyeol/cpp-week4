@@ -34,6 +34,7 @@ Entry *create(Type type, std::string key, void *value){
   return newEntry;
 }
 
+
 // 데이터베이스를 초기화한다.
 void init(Database &database){
   database.size=0;
@@ -59,13 +60,33 @@ void add(Database &database, Entry *entry){
 }
 
 // 데이터베이스에서 키에 해당하는 엔트리를 찾는다.
-Entry *get(Database &database, std::string &key);
+Entry *get(Database &database, std::string &key){
+  for(int i=0;i<database.size;++i){
+    if(database.entries[i].key==key){
+      return &database.entries[i];
+      
+    }
+  }
+  return nullptr;
+}
 
 // 데이터베이스에서 키에 해당하는 엔트리를 제거한다.
-void remove(Database &database, std::string &key);
+void remove(Database &database, std::string &key){
+  for(int i=0;i<database.size;++i){
+    if(database.entries[i].key==key){
+      for(int j=i;j<database.size-1;++j){
+        database.entries[j]=database.entries[j+1];
+      }
+      --database.size;
+    }
+  }
+}
 
 // 데이터베이스를 해제한다.
-void destroy(Database &database);
+void destroy(Database &database){
+  delete[]database.entries;
+  database.size=0;
+}
 
 
 int main(){
@@ -78,7 +99,22 @@ int main(){
         cout<<"command (list, add, get, del, exit): ";
         cin>>menu;
         if(menu=="list"){
-
+          for(int i=0;i<db.size;++i){
+            cout<<db.entries[i].key<<": ";
+            switch(db.entries[i].type){
+              case INT:
+              cout<<*((int*)db.entries[i].value);
+              break;
+              case DOUBLE:
+              cout<<(double)(*((double*)db.entries[i].value));
+              break;
+              case STRING:
+              cout<<"\""<<*((string*)db.entries[i].value)<<"\"";
+              break;
+              
+            }
+            cout<<endl;
+          }
         }
         else if(menu=="add"){
           string key;
@@ -115,10 +151,12 @@ int main(){
           else if(t==DOUBLE){
             double *value=new double;
             cin>>*value;
+            add(db,create(t,key,value));
           }
           else if(t==STRING){
             string *value=new string;
             cin>>*value;
+            add(db,create(t,key,value));
           }
           else if(t==ARRAY){
             Array *array=new Array;
@@ -137,8 +175,10 @@ int main(){
               for(int i=0;i<array->size;i++){
                 cout<<"item["<<i<<"]: ";
                 cin>>items[i];
+                add(db, create(INT, key, &items[i]));
               }
               array->items=items;
+              
             }
             else if(arrayType=="double"){
               array->type=DOUBLE;
@@ -147,6 +187,7 @@ int main(){
               for(int i=0;i<array->size;i++){
                 cout<<"item["<<i<<"]: ";
                 cin>>items[i];
+                add(db, create(DOUBLE, key, &items[i]));
               }
               array->items=items;
             }
@@ -157,6 +198,7 @@ int main(){
               for(int i=0;i<array->size;i++){
                 cout<<"item["<<i<<"]: ";
                 cin>>items[i];
+                add(db, create(STRING, key, &items[i]));
               }
               array->items=items;
             }
@@ -181,6 +223,7 @@ int main(){
                   for(int j=0;j<items[i]->size;++j){
                     cout<<"item["<<j<<"]: ";
                     cin>>items1[j];
+                    add(db, create(INT, key, &items1[j]));
                   }
                   items[i]->items=items1;
                 }
@@ -191,6 +234,7 @@ int main(){
                   for(int j=0;j<items[i]->size;++j){
                     cout<<"item["<<j<<"]: ";
                     cin>>items1[j];
+                    add(db, create(DOUBLE, key, &items1[j]));
                   }
                   items[i]->items=items1;
                 }
@@ -201,6 +245,7 @@ int main(){
                   for(int j=0;j<items[i]->size;++j){
                     cout<<"item["<<j<<"]: ";
                     cin>>items1[j];
+                    add(db, create(STRING, key, &items1[j]));
                   }
                   items[i]->items=items1;
                 }
@@ -212,19 +257,47 @@ int main(){
 
         }
         else if(menu=="get"){
+          string key;
+          cout<<"key: ";
+          cin>>key;
+          Entry *entry=get(db, key);
+          cout<<entry->key<<": ";
+          if(entry){
+            switch (entry->type){
+            case INT:
+            cout<<*((int*)entry->value);
+            break;
+            case DOUBLE:
+            cout<<(double)*((double*)entry->value);
+            break;
+            case STRING:
+            cout<<"\""<<*((string*)entry->value)<<"\"";
+            break;
+            case ARRAY:
+            break;
+          }
+          cout<<endl;
+          }
 
         }
         else if(menu=="del"){
+          string key;
+          cout<<"key: ";
+          cin>>key;
+          remove(db,key);
 
         }
         else if(menu=="exit"){
             exit(0);
         }
         else{
-            cout<<"invalid command";
+            cout<<"invalid command"<<endl;
+            cout<<endl;
         }
 
 
     }
 }
+
+
 #endif
