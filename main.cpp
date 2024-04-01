@@ -122,8 +122,92 @@ int main(){
           }
           else if(t==ARRAY){
             Array *array=new Array;
-            string type;
+            string arrayType;
+
             cout<<"type (int, double, string, array): ";
+            cin>>arrayType;
+            
+            cout<<"size: ";
+            cin>>array->size;
+
+            if(arrayType=="int"){
+              array->type=INT;
+              int *items=new int[array->size];
+
+              for(int i=0;i<array->size;i++){
+                cout<<"item["<<i<<"]: ";
+                cin>>items[i];
+              }
+              array->items=items;
+            }
+            else if(arrayType=="double"){
+              array->type=DOUBLE;
+              double *items=new double[array->size];
+
+              for(int i=0;i<array->size;i++){
+                cout<<"item["<<i<<"]: ";
+                cin>>items[i];
+              }
+              array->items=items;
+            }
+            else if(arrayType=="string"){
+              array->type=STRING;
+              string *items=new string[array->size];
+
+              for(int i=0;i<array->size;i++){
+                cout<<"item["<<i<<"]: ";
+                cin>>items[i];
+              }
+              array->items=items;
+            }
+            else if(arrayType=="array"){
+              array->type=ARRAY;
+              Array **items=new Array*[array->size];
+
+              for(int i=0;i<array->size;i++){
+                string arrayType1;
+                string items1;
+                items[i]=new Array;
+
+                cout<<"item["<<i<<"]: type (int, double, string): ";
+                cin>>arrayType1;
+                cout<<"size: ";
+                cin>>items[i]->size;
+                
+                if(arrayType1=="int"){
+                  items[i]->type=INT;
+                  int *items1=new int[items[i]->size];
+
+                  for(int j=0;j<items[i]->size;++j){
+                    cout<<"item["<<j<<"]: ";
+                    cin>>items1[j];
+                  }
+                  items[i]->items=items1;
+                }
+                else if(arrayType1=="double"){
+                  items[i]->type=DOUBLE;
+                  double *items1=new double[items[i]->size];
+
+                  for(int j=0;j<items[i]->size;++j){
+                    cout<<"item["<<j<<"]: ";
+                    cin>>items1[j];
+                  }
+                  items[i]->items=items1;
+                }
+                else if(arrayType1=="string"){
+                  items[i]->type=STRING;
+                  string *items1=new string[items[i]->size];
+
+                  for(int j=0;j<items[i]->size;++j){
+                    cout<<"item["<<j<<"]: ";
+                    cin>>items1[j];
+                  }
+                  items[i]->items=items1;
+                }
+
+              }
+              array->items=items;
+            }
           }
 
         }
