@@ -8,17 +8,21 @@ enum Type { INT, DOUBLE, STRING, ARRAY };
 
 struct Array {
   int size;
+  int size2;
   Type type;
   void *items;
   Type element;
+  Type element2;
 };
 
 struct Entry {
   int size;
+  int size2;
   Type type;
   std::string key;
   void *value;
   Type element;
+  Type element2;
 };
 
 struct Database {
@@ -45,6 +49,21 @@ Entry *arraycreate(Type type, std::string key, void *value, Type element,int siz
   newEntry->value=value;
   newEntry->element=element;
   newEntry->size=size;
+
+  return newEntry;
+}
+
+Entry *doublearraycreate(Type type, std::string key, void *value, Type element,Type element2,int size,int size2){
+  Entry *newEntry=new Entry;
+
+  newEntry->type=type;
+  newEntry->key=key;
+  newEntry->value=value;
+  newEntry->element=element;
+  newEntry->element2=element2;
+  newEntry->size=size;
+  newEntry->size2=size2;
+
 
   return newEntry;
 }
@@ -114,7 +133,7 @@ int main(){
         cout<<"command (list, add, get, del, exit): ";
         cin>>menu;
         if(menu=="list"){
-          for(int i=0;i<db.size;++i){
+          for(int i=0;i<db.size;i++){
             cout<<db.entries[i].key<<": ";
             switch(db.entries[i].type){
 
@@ -151,16 +170,51 @@ int main(){
                       cout << *((string*)db.entries[i].value+ j);
                       break;
                     }
+                    case ARRAY:{
+                      cout<<"[";
+                      for(int k=0;k<db.entries[i].size2;k++){
+                        
+                        switch (db.entries[i].element2){
+                          case INT:{
+                            cout << *((int*)db.entries[i].value+k);
+                            break;
+                          }
+                          case DOUBLE:{
+                           cout << *((double*)db.entries[i].value+ k);
+                            break;
+                          }
+                          case STRING:{
+                            cout << *((string*)db.entries[i].value+ k);
+                            break;
+                         }
+                        }
+                        if (k != db.entries[i].size2-1) {
+                          cout << ", ";
+                        }
+                      }
+                      if(j!=db.entries[i].size-1){
+                      i+=db.entries[i].size2;
+                      }
+                      else{
+                        i+=db.entries[i].size2-1;
+                      }
+                      cout<<"]";
+                      break;
+                    }
                     }
                 if (j != db.entries[i].size-1) {
                  cout << ", ";
                }
                }
+               if(db.entries[i].element!=ARRAY){
                i+=db.entries[i].size-1;
+               }
                cout<<"]"; 
+               break;
           }
-          cout<<endl;
+          
         }
+        cout<<endl;
         }
         }
         else if(menu=="add"){
@@ -253,55 +307,55 @@ int main(){
               
             }
             else if(arrayType=="array"){
-              
-              Array **items=new Array*[array->size];
+              array->element;
 
               for(int i=0;i<array->size;i++){
                 string arrayType1;
                 string items1;
-                items[i]=new Array;
+                int size2;
+                
 
                 cout<<"item["<<i<<"]: type (int, double, string): ";
                 cin>>arrayType1;
                 cout<<"size: ";
-                cin>>items[i]->size;
+                cin>>size2;
                 
                 if(arrayType1=="int"){
-                  
-                  int *items1=new int[items[i]->size];
+                  array->element2=INT;
+                  int *items1=new int[size2];
 
-                  for(int j=0;j<items[i]->size;++j){
+                  for(int j=0;j<size2;j++){
                     cout<<"item["<<j<<"]: ";
                     cin>>items1[j];
-                    add(db, arraycreate(ARRAY, key, &items1[j],INT,array->size));
+                    add(db, doublearraycreate(ARRAY, key, &items1[j],ARRAY,INT,array->size,size2));
                   }
-                  items[i]->items=items1;
+                  
                 }
                 else if(arrayType1=="double"){
                   
-                  double *items1=new double[items[i]->size];
+                  array->element2=DOUBLE;
+                  double *items1=new double[size2];
 
-                  for(int j=0;j<items[i]->size;++j){
+                  for(int j=0;j<size2;j++){
                     cout<<"item["<<j<<"]: ";
                     cin>>items1[j];
-                    add(db, arraycreate(ARRAY, key, &items1[j],DOUBLE,array->size));
+                    add(db, doublearraycreate(ARRAY, key, &items1[j],ARRAY,DOUBLE,array->size,size2));
                   }
-                  items[i]->items=items1;
                 }
                 else if(arrayType1=="string"){
                   
-                  string *items1=new string[items[i]->size];
+                  array->element2=STRING;
+                  string *items1=new string[size2];
 
-                  for(int j=0;j<items[i]->size;++j){
+                  for(int j=0;j<size2;j++){
                     cout<<"item["<<j<<"]: ";
                     cin>>items1[j];
-                    add(db, arraycreate(ARRAY, key, &items1[j],STRING,array->size));
+                    add(db, doublearraycreate(ARRAY, key, &items1[j],ARRAY,STRING,array->size,size2));
                   }
-                  items[i]->items=items1;
                 }
 
               }
-              array->items=items;
+            
             }
           }
 
